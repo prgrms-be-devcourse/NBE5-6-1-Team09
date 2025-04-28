@@ -1,0 +1,161 @@
+Index: src/main/java/com/grepp/spring/IndexController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/IndexController.java b/src/main/java/com/grepp/spring/MainController.java
+rename from src/main/java/com/grepp/spring/IndexController.java
+rename to src/main/java/com/grepp/spring/MainController.java
+--- a/src/main/java/com/grepp/spring/IndexController.java	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/java/com/grepp/spring/MainController.java	(date 1745473161480)
+@@ -1,16 +1,27 @@
+ package com.grepp.spring;
+ 
++import com.grepp.spring.app.model.product.ProductService;
++import com.grepp.spring.app.model.product.dto.ProductDto;
++import lombok.RequiredArgsConstructor;
+ import org.springframework.stereotype.Controller;
++import org.springframework.ui.Model;
+ import org.springframework.web.bind.annotation.GetMapping;
+ import org.springframework.web.bind.annotation.RequestMapping;
+ 
++import java.util.List;
++
+ @Controller
+ @RequestMapping("/")
+-public class IndexController {
++@RequiredArgsConstructor
++public class MainController {
+ 
+-//    @CrossOrigin(origins = "http://localhost:63342", allowCredentials = "true")
++    private final ProductService productService;
++
+     @GetMapping
+-    public String index() {
+-        return "index";
++    public String main(Model model) {
++        List<ProductDto> product = productService.selectAll();
++        model.addAttribute("products", product);
++        return "main";
+     }
++
+ }
+Index: src/main/webapp/WEB-INF/view/index.jsp
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/index.jsp b/src/main/webapp/WEB-INF/view/index.jsp
+deleted file mode 100644
+--- a/src/main/webapp/WEB-INF/view/index.jsp	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ /dev/null	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
+@@ -1,16 +0,0 @@
+-<%--
+-  Created by IntelliJ IDEA.
+-  User: namdabin
+-  Date: 2025-04-22
+-  Time: 오후 7:03
+-  To change this template use File | Settings | File Templates.
+---%>
+-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+-<html>
+-<head>
+-    <title>Title</title>
+-</head>
+-<body>
+-<h1>Hello This is index jsp</h1>
+-</body>
+-</html>
+Index: src/main/webapp/WEB-INF/view/main.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/main.jsp b/src/main/webapp/WEB-INF/view/main.jsp
+new file mode 100644
+--- /dev/null	(date 1745472906576)
++++ b/src/main/webapp/WEB-INF/view/main.jsp	(date 1745472906576)
+@@ -0,0 +1,85 @@
++<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
++<%@include file="/WEB-INF/view/include/page.jsp" %>
++<html>
++<head>
++    <title>Grids & Circle</title>
++    <%@include file="/WEB-INF/view/include/static.jsp" %>
++    <style>
++        body {
++            background: #ddd;
++        }
++
++        .center-wrapper {
++            display: flex;
++            flex-wrap: wrap;
++            justify-content: center;
++            margin: 0;
++            padding: 0;
++        }
++
++        .rounded-card {
++            border-radius: 12px;
++        }
++
++        .rounded-card .card-image img {
++            border-top-left-radius: 12px;
++            border-top-right-radius: 12px;
++        }
++
++        .custom-price p {
++            font-size: 1.3rem;
++            font-weight: bold;
++            margin: 0;
++        }
++
++        .cart-sidebar {
++            position: fixed;
++            top: 50%;
++            left: 80px;
++            transform: translateY(-50%);
++            width: 240px;
++            background-color: white;
++            padding: 16px;
++            box-shadow: 0 0 8px rgba(0,0,0,0.2);
++            border-radius: 8px;
++            z-index: 999;
++        }
++    </style>
++</head>
++<body>
++<%@include file="/WEB-INF/view/include/header.jsp" %>
++<%@include file="/WEB-INF/view/include/sidenav.jsp" %>
++<main class="container" style="padding: 0;">
++    <div class="product-list row center-wrapper" style="margin: 0;">
++        <c:forEach items="${products}" var="product">
++            <div class="col s12 m6 no-padding" style="max-width: 400px;">
++                <div class="card hoverable rounded-card z-depth-2" style="margin: 5px">
++                    <div class="card-image">
++                        <img src="${product.image.url}" style="height: 400px;">
++                        <a class="btn-floating halfway-fab waves-effect black add-cart"><i class="material-icons">add_shopping_cart</i></a>
++                    </div>
++                    <div class="card-content">
++                        <span class="card-title blue-grey-darken-3-text"><c:out value="${product.name}"/></span>
++                        <p class="info blue-grey-text"><c:out value="${product.info}"/></p>
++                        <div class="price center-align custom-price"><p><c:out value="${product.price}"/>원</p></div>
++                    </div>
++                </div>
++            </div>
++        </c:forEach>
++
++    </div>
++    <div class="cart-sidebar" id="cartSidebar">
++        <h6>🛒 장바구니 (<span id="cartCount">0</span>)</h6>
++        <ul id="cartItems" class="collection"></ul>
++        <form id="cartForm" action="/product/list" method="post">
++            <div id="cartFormInputs"></div>
++            <button type="submit" class="btn btn-small black center-align" style="margin-top: 10px;">구매하기</button>
++        </form>
++    </div>
++</main>
++
++<span class="target" style="display:none;"></span>
++<%@include file="/WEB-INF/view/include/footer.jsp" %>
++<script src="${context}/assets/js/sidebar.js" defer></script>
++</body>
++</html>
+\ No newline at end of file

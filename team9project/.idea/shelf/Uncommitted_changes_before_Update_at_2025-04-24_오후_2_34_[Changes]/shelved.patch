@@ -1,0 +1,149 @@
+Index: src/main/java/com/grepp/spring/IndexController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.grepp.spring;\r\n\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\n\r\n@Controller\r\n@RequestMapping(\"/\")\r\npublic class IndexController {\r\n\r\n//    @CrossOrigin(origins = \"http://localhost:63342\", allowCredentials = \"true\")\r\n    @GetMapping\r\n    public String index() {\r\n        return \"index\";\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/IndexController.java b/src/main/java/com/grepp/spring/IndexController.java
+--- a/src/main/java/com/grepp/spring/IndexController.java	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/java/com/grepp/spring/IndexController.java	(date 1745472500486)
+@@ -1,16 +1,28 @@
+ package com.grepp.spring;
+ 
++import com.grepp.spring.app.model.product.ProductService;
++import com.grepp.spring.app.model.product.dto.ProductDto;
++import lombok.RequiredArgsConstructor;
+ import org.springframework.stereotype.Controller;
++import org.springframework.ui.Model;
+ import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PostMapping;
+ import org.springframework.web.bind.annotation.RequestMapping;
+ 
++import java.util.List;
++
+ @Controller
+ @RequestMapping("/")
++@RequiredArgsConstructor
+ public class IndexController {
+ 
+-//    @CrossOrigin(origins = "http://localhost:63342", allowCredentials = "true")
++    private final ProductService productService;
++
+     @GetMapping
+-    public String index() {
++    public String index(Model model) {
++        List<ProductDto> product = productService.selectAll();
++        model.addAttribute("products", product);
+         return "index";
+     }
++
+ }
+Index: src/main/webapp/WEB-INF/view/index.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><%--\r\n  Created by IntelliJ IDEA.\r\n  User: namdabin\r\n  Date: 2025-04-22\r\n  Time: 오후 7:03\r\n  To change this template use File | Settings | File Templates.\r\n--%>\r\n<%@ page contentType=\"text/html;charset=UTF-8\" language=\"java\" %>\r\n<html>\r\n<head>\r\n    <title>Title</title>\r\n</head>\r\n<body>\r\n<h1>Hello This is index jsp</h1>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/index.jsp b/src/main/webapp/WEB-INF/view/index.jsp
+--- a/src/main/webapp/WEB-INF/view/index.jsp	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/webapp/WEB-INF/view/index.jsp	(date 1745472760043)
+@@ -1,16 +1,85 @@
+-<%--
+-  Created by IntelliJ IDEA.
+-  User: namdabin
+-  Date: 2025-04-22
+-  Time: 오후 7:03
+-  To change this template use File | Settings | File Templates.
+---%>
+-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
++<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
++<%@include file="/WEB-INF/view/include/page.jsp" %>
+ <html>
+ <head>
+-    <title>Title</title>
++    <title>Grids & Circle</title>
++    <%@include file="/WEB-INF/view/include/static.jsp" %>
++    <style>
++        body {
++            background: #ddd;
++        }
++
++        .center-wrapper {
++            display: flex;
++            flex-wrap: wrap;
++            justify-content: center;
++            margin: 0;
++            padding: 0;
++        }
++
++        .rounded-card {
++            border-radius: 12px;
++        }
++
++        .rounded-card .card-image img {
++            border-top-left-radius: 12px;
++            border-top-right-radius: 12px;
++        }
++
++        .custom-price p {
++            font-size: 1.3rem;
++            font-weight: bold;
++            margin: 0;
++        }
++
++        .cart-sidebar {
++            position: fixed;
++            top: 50%;
++            left: 80px;
++            transform: translateY(-50%);
++            width: 240px;
++            background-color: white;
++            padding: 16px;
++            box-shadow: 0 0 8px rgba(0,0,0,0.2);
++            border-radius: 8px;
++            z-index: 999;
++        }
++    </style>
+ </head>
+ <body>
+-<h1>Hello This is index jsp</h1>
++<%@include file="/WEB-INF/view/include/header.jsp" %>
++<%@include file="/WEB-INF/view/include/sidenav.jsp" %>
++<main class="container" style="padding: 0;">
++    <div class="product-list row center-wrapper" style="margin: 0;">
++        <c:forEach items="${products}" var="product">
++            <div class="col s12 m6 no-padding" style="max-width: 400px;">
++                <div class="card hoverable rounded-card z-depth-2" style="margin: 5px">
++                    <div class="card-image">
++                        <img src="${product.image.url}" style="height: 400px;">
++                        <a class="btn-floating halfway-fab waves-effect black add-cart"><i class="material-icons">add_shopping_cart</i></a>
++                    </div>
++                    <div class="card-content">
++                        <span class="card-title blue-grey-darken-3-text"><c:out value="${product.name}"/></span>
++                        <p class="info blue-grey-text"><c:out value="${product.info}"/></p>
++                        <div class="price center-align custom-price"><p><c:out value="${product.price}"/>원</p></div>
++                    </div>
++                </div>
++            </div>
++        </c:forEach>
++
++    </div>
++    <div class="cart-sidebar" id="cartSidebar">
++        <h6>🛒 장바구니 (<span id="cartCount">0</span>)</h6>
++        <ul id="cartItems" class="collection"></ul>
++        <form id="cartForm" action="/product/list" method="post">
++            <div id="cartFormInputs"></div>
++            <button type="submit" class="btn btn-small black center-align" style="margin-top: 10px;">구매하기</button>
++        </form>
++    </div>
++</main>
++
++<span class="target" style="display:none;"></span>
++<%@include file="/WEB-INF/view/include/footer.jsp" %>
++<script src="${context}/assets/js/sidebar.js" defer></script>
+ </body>
+-</html>
++</html>
+\ No newline at end of file

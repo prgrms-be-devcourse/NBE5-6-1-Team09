@@ -1,0 +1,13 @@
+<changelist name="Uncommitted_changes_before_Update_at_2025-04-26_오후_10_47_[Changes]" date="1745675265030" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-04-26_오후_10_47_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2025-04-26 오후 10:47 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/grepp/spring/infra/config/SecurityConfig.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/mvc-1.0-SNAPSHOT/WEB-INF/classes/com/grepp/spring/infra/config/SecurityConfig$1.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/grepp/spring/infra/config/SecurityConfig$1.class" />
+  </binary>
+</changelist>

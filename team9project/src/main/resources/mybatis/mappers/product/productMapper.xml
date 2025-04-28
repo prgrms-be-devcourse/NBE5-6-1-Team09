@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.grepp.spring.app.model.product.ProductRepository">
+
+  <resultMap id="productMap" type="com.grepp.spring.app.model.product.dto.ProductDto">
+    <id property="id" column="id"/>
+    <association property="image" column="id" javaType="ProductImg" select="selectImg" columnPrefix="product_"/>
+  </resultMap>
+
+  <select id="selectAll" parameterType="com.grepp.spring.app.model.product.dto.ProductDto" resultMap="productMap">
+    <!-- join 해서 product image도 같이 가져오기-->
+    select * from product;
+  </select>
+
+  <select id="selectProductAmountById" resultType="int">
+    SELECT amount FROM product WHERE id = #{id}
+  </select>
+
+  <select id="selectPaged" resultMap="productMap">
+    select * from product order by created_at desc limit #{start}, #{offset}
+  </select>
+
+  <insert id="insert" parameterType="com.grepp.spring.app.model.product.dto.ProductDto" useGeneratedKeys="true" keyProperty="id">
+    insert into product(name, price, amount, info) values (#{name}, #{price}, #{amount}, #{info})
+  </insert>
+
+  <insert id="insertImage" parameterType="com.grepp.spring.app.model.product.dto.ProductImg">
+    insert into product_image(product_id, ORIGIN_FILE_NAME, RENAME_FILE_NAME, SAVE_PATH)
+    values (#{productId}, #{originFileName}, #{renameFileName}, #{savePath})
+  </insert>
+
+  <insert id="insertPurchase" parameterType="com.grepp.spring.app.model.product.dto.OrderDto" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO coffee.order
+    (email, address, address_number, total_amount, total_price, createdAt, is_member, user_id)
+    VALUES(#{email}, #{address}, #{addressNumber}, #{totalAmount}, #{totalPrice}, CURRENT_TIMESTAMP, #{isMember}, #{userId});
+  </insert>
+
+  <insert id="insertOrderProduct"
+    parameterType="com.grepp.spring.app.model.product.dto.OrderProductDto">
+    INSERT INTO `coffee`.order_product
+    (order_id, product_id, amount, name)
+    VALUES (#{orderId}, #{productId}, #{amount}, #{name});
+  </insert>
+
+  <select id="selectImg" parameterType="int" resultType="com.grepp.spring.app.model.product.dto.ProductImg">
+    SELECT * FROM product_image WHERE product_id = #{product_id}
+  </select>
+
+  <delete id="deleteById" parameterType="int" >
+    delete from product where id = #{id}
+  </delete>
+
+  <select id="selectById" parameterType="com.grepp.spring.app.model.product.dto.ProductDto" resultMap="productMap">
+    select * from product where id = #{id}
+  </select>
+
+  <update id="updateOrderList" >
+    UPDATE `order` AS o
+    JOIN (
+    SELECT id
+    FROM (
+    SELECT id
+    FROM `order`
+    WHERE email = #{email}
+    ORDER BY createdAt ASC
+    LIMIT 1
+    ) AS subquery
+    ) AS t
+    ON o.id = t.id
+    SET o.total_amount = o.total_amount + #{totalAmount},
+    o.total_price = o.total_price + #{totalPrice};
+  </update>
+
+  <update id="updateProductAmountById" >
+    update product
+    SET amount = amount - #{amount}
+    where id = #{id}
+  </update>
+
+  <update id="updateProductById" >
+    update product
+    set name=#{dto.name}, price=#{dto.price}, amount=#{dto.amount}, info=#{dto.info}
+    where id = #{id}
+  </update>
+
+  <update id="updateImageById" parameterType="com.grepp.spring.app.model.product.dto.ProductImg">
+    update product_image
+    set ORIGIN_FILE_NAME=#{originFileName}, RENAME_FILE_NAME=#{renameFileName}, SAVE_PATH=#{savePath}
+    where product_id = #{productId}
+  </update>
+
+  <select id="findProducts" resultType="com.grepp.spring.app.model.product.dto.ProductDto" resultMap="productMap">
+    SELECT * FROM product
+    ORDER BY id DESC
+    LIMIT #{pageSize} OFFSET #{offset}
+  </select>
+
+  <select id="countProducts" resultType="int">
+    SELECT COUNT(*) FROM product
+  </select>
+
+</mapper>

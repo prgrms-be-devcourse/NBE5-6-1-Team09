@@ -1,0 +1,302 @@
+Index: src/main/webapp/WEB-INF/view/include/header.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><%@ page language=\"java\" %>\r\n<header class=\"header\">\r\n    <nav class=\"navbar white\">\r\n        <div class=\"nav-wrapper \">\r\n            <a href=\"/\" class=\"brand-logo center grey-text\">Grepp</a>\r\n            <ul id=\"nav-mobile\" class=\"right hide-on-med-and-down grey-text\">\r\n                <sec:authorize access=\"isAnonymous()\">\r\n                    <li><a href=\"/member/signin\" class=\"grey-text\">sign in</a></li>\r\n                    <li><a href=\"/member/signup\" class=\"grey-text\">sign up</a></li>\r\n                    <li>\r\n                        <a href=\"mobile.html\">\r\n                            <i class=\"material-icons grey-text sidenav-trigger\"\r\n                               data-target=\"slide-out\">more_vert</i>\r\n                        </a>\r\n                    </li>\r\n                </sec:authorize>\r\n            </ul>\r\n        </div>\r\n    </nav>\r\n</header>\r\n<form:form action=\"/logout\" method=\"post\" id=\"logoutForm\">\r\n</form:form>\r\n<script>\r\n\r\n  (() => {\r\n\r\n    const logout = document.querySelector('#logout');\r\n    if(!logout) return;\r\n\r\n    logout.addEventListener('click', ev => {\r\n      ev.preventDefault();\r\n      logoutForm.submit();\r\n    });\r\n\r\n  })();\r\n</script>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/include/header.jsp b/src/main/webapp/WEB-INF/view/include/header.jsp
+--- a/src/main/webapp/WEB-INF/view/include/header.jsp	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/src/main/webapp/WEB-INF/view/include/header.jsp	(date 1745480183606)
+@@ -5,8 +5,6 @@
+             <a href="/" class="brand-logo center grey-text">Grepp</a>
+             <ul id="nav-mobile" class="right hide-on-med-and-down grey-text">
+                 <sec:authorize access="isAnonymous()">
+-                    <li><a href="/member/signin" class="grey-text">sign in</a></li>
+-                    <li><a href="/member/signup" class="grey-text">sign up</a></li>
+                     <li>
+                         <a href="mobile.html">
+                             <i class="material-icons grey-text sidenav-trigger"
+Index: src/main/webapp/assets/js/sidebar.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>const cartMap = new Map();\r\nconst cartItems = document.getElementById(\"cartItems\");\r\nconst cartCountSpan = document.getElementById(\"cartCount\");\r\nconst cartFormInputs = document.getElementById(\"cartFormInputs\");\r\n\r\ndocument.addEventListener(\"click\", function (e) {\r\n    const target = e.target.closest(\".add-cart\");\r\n    if (!target) return;\r\n\r\n    const card = target.closest(\".card\");\r\n    const name = card.querySelector(\".card-title\").textContent;\r\n    const priceText = card.querySelector(\".price p\").textContent;\r\n    const price = parseInt(priceText.replace(/[^0-9]/g, \"\"), 10);\r\n\r\n    if (cartMap.has(name)) {\r\n        const item = cartMap.get(name);\r\n        item.count += 1;\r\n        item.totalPrice += price;\r\n\r\n        item.element.textContent = `${name} (${item.count}개) - ${item.totalPrice.toLocaleString()}원`;\r\n\r\n        item.inputCount.value = item.count;\r\n        item.inputPrice.value = item.totalPrice;\r\n    } else {\r\n        const li = document.createElement(\"li\");\r\n        li.className = \"collection-item\";\r\n        li.textContent = `${name} (1개) - ${price.toLocaleString()}원`;\r\n        cartItems.appendChild(li);\r\n\r\n        const inputName = document.createElement(\"input\");\r\n        inputName.type = \"hidden\";\r\n        inputName.name = \"items[][name]\";\r\n        inputName.value = name;\r\n\r\n        const inputCount = document.createElement(\"input\");\r\n        inputCount.type = \"hidden\";\r\n        inputCount.name = \"items[][count]\";\r\n        inputCount.value = 1;\r\n\r\n        const inputPrice = document.createElement(\"input\");\r\n        inputPrice.type = \"hidden\";\r\n        inputPrice.name = \"items[][totalPrice]\";\r\n        inputPrice.value = price;\r\n\r\n        cartFormInputs.appendChild(inputName);\r\n        cartFormInputs.appendChild(inputCount);\r\n        cartFormInputs.appendChild(inputPrice);\r\n\r\n        cartMap.set(name, {\r\n            count: 1,\r\n            totalPrice: price,\r\n            element: li,\r\n            inputCount: inputCount,\r\n            inputPrice: inputPrice\r\n        });\r\n    }\r\n\r\n    cartCountSpan.textContent = +cartCountSpan.textContent + 1;\r\n});\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/assets/js/sidebar.js b/src/main/webapp/assets/js/sidebar.js
+--- a/src/main/webapp/assets/js/sidebar.js	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/src/main/webapp/assets/js/sidebar.js	(date 1745515156770)
+@@ -1,7 +1,9 @@
+ const cartMap = new Map();
+ const cartItems = document.getElementById("cartItems");
+-const cartCountSpan = document.getElementById("cartCount");
+ const cartFormInputs = document.getElementById("cartFormInputs");
++const cartCountSpan = document.getElementById("cartCount");
++
++let itemIndex = 0;
+ 
+ document.addEventListener("click", function (e) {
+     const target = e.target.closest(".add-cart");
+@@ -16,9 +18,9 @@
+         const item = cartMap.get(name);
+         item.count += 1;
+         item.totalPrice += price;
+-
+         item.element.textContent = `${name} (${item.count}개) - ${item.totalPrice.toLocaleString()}원`;
+ 
++        // count/price 값만 업데이트
+         item.inputCount.value = item.count;
+         item.inputPrice.value = item.totalPrice;
+     } else {
+@@ -27,19 +29,20 @@
+         li.textContent = `${name} (1개) - ${price.toLocaleString()}원`;
+         cartItems.appendChild(li);
+ 
++        // 배열 형태의 name 설정
+         const inputName = document.createElement("input");
+         inputName.type = "hidden";
+-        inputName.name = "items[][name]";
++        inputName.name = `items[${itemIndex}].name`;
+         inputName.value = name;
+ 
+         const inputCount = document.createElement("input");
+         inputCount.type = "hidden";
+-        inputCount.name = "items[][count]";
++        inputCount.name = `items[${itemIndex}].count`;
+         inputCount.value = 1;
+ 
+         const inputPrice = document.createElement("input");
+         inputPrice.type = "hidden";
+-        inputPrice.name = "items[][totalPrice]";
++        inputPrice.name = `items[${itemIndex}].price`;
+         inputPrice.value = price;
+ 
+         cartFormInputs.appendChild(inputName);
+@@ -53,6 +56,8 @@
+             inputCount: inputCount,
+             inputPrice: inputPrice
+         });
++
++        itemIndex++; // 다음 상품에 대한 인덱스 증가
+     }
+ 
+     cartCountSpan.textContent = +cartCountSpan.textContent + 1;
+Index: src/main/java/com/grepp/spring/infra/config/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.grepp.spring.infra.config;\r\n\r\nimport jakarta.servlet.ServletException;\r\nimport jakarta.servlet.http.HttpServletRequest;\r\nimport jakarta.servlet.http.HttpServletResponse;\r\nimport java.io.IOException;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.context.annotation.Bean;\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.security.authentication.AuthenticationManager;\r\nimport org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;\r\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\r\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\r\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\r\nimport org.springframework.security.core.Authentication;\r\nimport org.springframework.security.core.userdetails.User;\r\nimport org.springframework.security.core.userdetails.UserDetails;\r\nimport org.springframework.security.core.userdetails.UserDetailsService;\r\nimport org.springframework.security.crypto.factory.PasswordEncoderFactories;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.security.provisioning.InMemoryUserDetailsManager;\r\nimport org.springframework.security.web.SecurityFilterChain;\r\nimport org.springframework.security.web.authentication.AuthenticationSuccessHandler;\r\n\r\nimport static org.springframework.http.HttpMethod.GET;\r\nimport static org.springframework.http.HttpMethod.POST;\r\nimport org.springframework.web.servlet.handler.HandlerMappingIntrospector;\r\n\r\n@Configuration\r\n@EnableWebSecurity\r\n@EnableMethodSecurity(prePostEnabled = true)\r\npublic class SecurityConfig {\r\n\r\n    @Value(\"${remember-me.key}\")\r\n    private String rememberMeKey;\r\n\r\n//    @Bean\r\n//    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {\r\n//        return new HandlerMappingIntrospector();\r\n//    }\r\n\r\n    @Bean\r\n    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {\r\n        return http.getSharedObject(AuthenticationManagerBuilder.class)\r\n            .build();\r\n    }\r\n\r\n    @Bean\r\n    public AuthenticationSuccessHandler successHandler() {\r\n\r\n        return new AuthenticationSuccessHandler() {\r\n            @Override\r\n            public void onAuthenticationSuccess(HttpServletRequest request,\r\n                HttpServletResponse response, Authentication authentication)\r\n                throws IOException, ServletException {\r\n\r\n                boolean isAdmin = authentication.getAuthorities()\r\n                    .stream()\r\n                    .anyMatch(authority ->\r\n                        authority.getAuthority().equals(\"ROLE_ADMIN\"));\r\n\r\n                if (isAdmin) {\r\n                    response.sendRedirect(\"/admin\");\r\n                    return;\r\n                }\r\n\r\n                response.sendRedirect(\"/\");\r\n            }\r\n        };\r\n    }\r\n\r\n    @Bean\r\n    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\r\n        // * : 1 depth 아래 모든 경로\r\n        // ** : 모든 depth 의 모든 경로\r\n        // // Security Config 에는 인증과 관련된 설정만 지정 (PermitAll or Authenticated)\r\n\r\n        http.authorizeHttpRequests((requests) -> requests\r\n                .requestMatchers(GET, \"/\", \"/assets/**\", \"/download/**\").permitAll()\r\n                .requestMatchers(GET, \"/api/user/exists/*\").permitAll()\r\n                .requestMatchers(GET, \"/user/signup\").permitAll()\r\n                .requestMatchers(GET, \"/user/signin\").permitAll()\r\n                .requestMatchers(POST, \"/user/signin\", \"/user/signup\").permitAll()\r\n                .anyRequest().authenticated()\r\n            )\r\n            .formLogin((form) -> form\r\n                .loginPage(\"/user/signin\")\r\n                .loginProcessingUrl(\"/user/signin\")\r\n                .usernameParameter(\"id\")\r\n                .passwordParameter(\"password\")\r\n                .defaultSuccessUrl(\"/\")\r\n                .successHandler(successHandler())\r\n                .permitAll()\r\n            )\r\n            .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))\r\n            .logout((logout) -> logout.permitAll());\r\n\r\n        return http.build();\r\n    }\r\n\r\n    @Bean\r\n    public PasswordEncoder passwordEncoder() {\r\n        return PasswordEncoderFactories.createDelegatingPasswordEncoder();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/infra/config/SecurityConfig.java b/src/main/java/com/grepp/spring/infra/config/SecurityConfig.java
+--- a/src/main/java/com/grepp/spring/infra/config/SecurityConfig.java	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/src/main/java/com/grepp/spring/infra/config/SecurityConfig.java	(date 1745481798158)
+@@ -42,7 +42,7 @@
+     @Bean
+     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+         return http.getSharedObject(AuthenticationManagerBuilder.class)
+-            .build();
++                .build();
+     }
+ 
+     @Bean
+@@ -51,13 +51,13 @@
+         return new AuthenticationSuccessHandler() {
+             @Override
+             public void onAuthenticationSuccess(HttpServletRequest request,
+-                HttpServletResponse response, Authentication authentication)
+-                throws IOException, ServletException {
++                                                HttpServletResponse response, Authentication authentication)
++                    throws IOException, ServletException {
+ 
+                 boolean isAdmin = authentication.getAuthorities()
+-                    .stream()
+-                    .anyMatch(authority ->
+-                        authority.getAuthority().equals("ROLE_ADMIN"));
++                        .stream()
++                        .anyMatch(authority ->
++                                authority.getAuthority().equals("ROLE_ADMIN"));
+ 
+                 if (isAdmin) {
+                     response.sendRedirect("/admin");
+@@ -76,24 +76,24 @@
+         // // Security Config 에는 인증과 관련된 설정만 지정 (PermitAll or Authenticated)
+ 
+         http.authorizeHttpRequests((requests) -> requests
+-                .requestMatchers(GET, "/", "/assets/**", "/download/**").permitAll()
+-                .requestMatchers(GET, "/api/user/exists/*").permitAll()
+-                .requestMatchers(GET, "/user/signup").permitAll()
+-                .requestMatchers(GET, "/user/signin").permitAll()
+-                .requestMatchers(POST, "/user/signin", "/user/signup").permitAll()
+-                .anyRequest().authenticated()
+-            )
+-            .formLogin((form) -> form
+-                .loginPage("/user/signin")
+-                .loginProcessingUrl("/user/signin")
+-                .usernameParameter("id")
+-                .passwordParameter("password")
+-                .defaultSuccessUrl("/")
+-                .successHandler(successHandler())
+-                .permitAll()
+-            )
+-            .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
+-            .logout((logout) -> logout.permitAll());
++                        .requestMatchers(GET, "/", "/assets/**", "/download/**").permitAll()
++                        .requestMatchers(GET, "/api/user/exists/*").permitAll()
++                        .requestMatchers(GET, "/user/signup").permitAll()
++                        .requestMatchers(GET, "/user/signin").permitAll()
++                        .requestMatchers(GET, "/admin/product/list", "test/list").permitAll()
++                        .requestMatchers(POST, "/user/signin", "/user/signup", "test/list").permitAll()
++                        .anyRequest().authenticated()
++                )
++                .formLogin((form) -> form
++                        .loginPage("/user/signin")
++                        .loginProcessingUrl("/user/signin")
++                        .usernameParameter("id")
++                        .passwordParameter("password")
++                        .defaultSuccessUrl("/", true)
++                        .permitAll()
++                )
++                .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
++                .logout((logout) -> logout.permitAll());
+ 
+         return http.build();
+     }
+@@ -102,4 +102,4 @@
+     public PasswordEncoder passwordEncoder() {
+         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+     }
+-}
++}
+\ No newline at end of file
+Index: src/main/webapp/WEB-INF/view/index.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><%@ page contentType=\"text/html; charset=UTF-8\" pageEncoding=\"UTF-8\" %>\r\n<%@ taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\" %>\r\n<%@include file=\"/WEB-INF/view/include/page.jsp\" %>\r\n<html>\r\n<head>\r\n    <title>상품 목록</title>\r\n    <%@include file=\"/WEB-INF/view/include/static.jsp\" %>\r\n    <link rel=\"stylesheet\" href=\"/css/style.css\">\r\n    <style>\r\n        .cart-sidebar {\r\n            position: fixed;\r\n            top: 50%;                   /* 화면 세로의 50% 지점 */\r\n            left: 80px;                /* 오른쪽에서 왼쪽으로 더 이동 */\r\n            transform: translateY(-50%); /* 세로축 기준 가운데 정렬 */\r\n            width: 240px;\r\n            background-color: white;\r\n            padding: 16px;\r\n            box-shadow: 0 0 8px rgba(0,0,0,0.2);\r\n            border-radius: 8px;\r\n            z-index: 999;\r\n        }\r\n\r\n        .rounded-card {\r\n            border-radius: 12px;\r\n        }\r\n\r\n        .rounded-card .card-image img {\r\n            border-top-left-radius: 12px;\r\n            border-top-right-radius: 12px;\r\n        }\r\n\r\n        .custom-price p {\r\n            font-size: 1.3rem;\r\n            font-weight: bold;\r\n            margin: 0;\r\n        }\r\n\r\n        .product-list {\r\n            margin-left: 280px;\r\n        }\r\n    </style>\r\n</head>\r\n<body>\r\n<%@include file=\"/WEB-INF/view/include/header.jsp\" %>\r\n<%@include file=\"/WEB-INF/view/include/sidenav.jsp\" %>\r\n\r\n<div class=\"cart-sidebar\" id=\"cartSidebar\">\r\n    <h6>\uD83D\uDED2 장바구니 (<span id=\"cartCount\">0</span>)</h6>\r\n    <ul id=\"cartItems\" class=\"collection\"></ul>\r\n    <form id=\"cartForm\" action=\"/order/purchase\" method=\"post\">\r\n        <div id=\"cartFormInputs\"></div>\r\n        <button type=\"submit\" class=\"btn btn-small green\" style=\"margin-top: 10px;\">구매하기</button>\r\n    </form>\r\n</div>\r\n\r\n<main class=\"container\" style=\"padding: 0;\">\r\n    <div class=\"product-list row center-wrapper\">\r\n        <c:forEach items=\"${products}\" var=\"product\">\r\n            <div class=\"col s12 m6 no-padding\" style=\"max-width: 400px;\">\r\n                <div class=\"card hoverable rounded-card z-depth-2\" style=\"margin: 5px;\">\r\n                    <div class=\"card-image\">\r\n                        <img src=\"${product.image.url}\" style=\"height: 400px;\" class=\"thumbnail\">\r\n                        <a class=\"btn-floating halfway-fab waves-effect black add-cart\">\r\n                            <i class=\"material-icons\">add_shopping_cart</i>\r\n                        </a>\r\n                    </div>\r\n                    <div class=\"card-content\">\r\n                        <span class=\"card-title name\"><c:out value=\"${product.name}\"/></span>\r\n                        <p class=\"info blue-grey-text\"><c:out value=\"${product.info}\"/></p>\r\n                        <div class=\"price center-align custom-price\">\r\n                            <p><c:out value=\"${product.price}\"/>원</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </c:forEach>\r\n    </div>\r\n    <span class=\"target\" style=\"display: block; height: 1px;\"></span>\r\n</main>\r\n\r\n\r\n<div id=\"productCardTemplate\" style=\"display: none;\">\r\n    <div class=\"col s12 m6 no-padding\" style=\"max-width: 400px;\">\r\n        <div class=\"card hoverable rounded-card z-depth-2\" style=\"margin: 5px;\">\r\n            <div class=\"card-image\">\r\n                <img class=\"thumbnail\" src=\"\" style=\"height: 400px;\">\r\n                <a class=\"btn-floating halfway-fab waves-effect black add-cart\">\r\n                    <i class=\"material-icons\">add_shopping_cart</i>\r\n                </a>\r\n            </div>\r\n            <div class=\"card-content\">\r\n                <span class=\"card-title name\"></span>\r\n                <p class=\"info blue-grey-text\"></p>\r\n                <div class=\"price center-align custom-price\"><p></p></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n<%@include file=\"/WEB-INF/view/include/footer.jsp\" %>\r\n<script src=\"${context}/assets/js/sidebar.js\" defer></script>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/index.jsp b/src/main/webapp/WEB-INF/view/index.jsp
+--- a/src/main/webapp/WEB-INF/view/index.jsp	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/src/main/webapp/WEB-INF/view/index.jsp	(date 1745484493742)
+@@ -1,17 +1,17 @@
+ <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+ <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+ <%@include file="/WEB-INF/view/include/page.jsp" %>
++<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+ <html>
+ <head>
+     <title>상품 목록</title>
+     <%@include file="/WEB-INF/view/include/static.jsp" %>
+-    <link rel="stylesheet" href="/css/style.css">
+     <style>
+         .cart-sidebar {
+             position: fixed;
+-            top: 50%;                   /* 화면 세로의 50% 지점 */
+-            left: 80px;                /* 오른쪽에서 왼쪽으로 더 이동 */
+-            transform: translateY(-50%); /* 세로축 기준 가운데 정렬 */
++            top: 50%;
++            left: 80px;
++            transform: translateY(-50%);
+             width: 240px;
+             background-color: white;
+             padding: 16px;
+@@ -47,7 +47,8 @@
+ <div class="cart-sidebar" id="cartSidebar">
+     <h6>🛒 장바구니 (<span id="cartCount">0</span>)</h6>
+     <ul id="cartItems" class="collection"></ul>
+-    <form id="cartForm" action="/order/purchase" method="post">
++    <form id="cartForm" action="/test/list" method="POST">
++        <sec:csrfInput/>
+         <div id="cartFormInputs"></div>
+         <button type="submit" class="btn btn-small green" style="margin-top: 10px;">구매하기</button>
+     </form>
+@@ -78,12 +79,11 @@
+     <span class="target" style="display: block; height: 1px;"></span>
+ </main>
+ 
+-
+ <div id="productCardTemplate" style="display: none;">
+     <div class="col s12 m6 no-padding" style="max-width: 400px;">
+         <div class="card hoverable rounded-card z-depth-2" style="margin: 5px;">
+             <div class="card-image">
+-                <img class="thumbnail" src="" style="height: 400px;">
++                <img src="${product.image.url}" style="height: 400px;" class="thumbnail">
+                 <a class="btn-floating halfway-fab waves-effect black add-cart">
+                     <i class="material-icons">add_shopping_cart</i>
+                 </a>
+Index: src/main/webapp/WEB-INF/view/include/sidenav.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/include/sidenav.jsp b/src/main/webapp/WEB-INF/view/include/sidenav.jsp
+deleted file mode 100644
+--- a/src/main/webapp/WEB-INF/view/include/sidenav.jsp	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ /dev/null	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
+@@ -1,28 +0,0 @@
+-<%@ page language="java" %>
+-
+-<ul id="slide-out" class="sidenav">
+-    <li>
+-        <div class="user-view">
+-            <div class="background">
+-                <img src="${context}/assets/img/flower1.PNG">
+-            </div>
+-            <a href="#user"><img class="circle" src="${context}/assets/img/flower1.PNG"></a>
+-            <a href="#name"><span class="white-text name">John Doe</span></a>
+-            <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+-        </div>
+-    </li>
+-    <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+-    <li><a href="#!">Second Link</a></li>
+-    <li>
+-        <div class="divider"></div>
+-    </li>
+-    <li><a class="subheader">Subheader</a></li>
+-    <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+-</ul>
+-
+-<script>
+-    document.addEventListener('DOMContentLoaded', function () {
+-        const elems = document.querySelectorAll('.sidenav');
+-        const instances = M.Sidenav.init(elems, {edge: "right"});
+-    });
+-</script>
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"DataSourceManagerImpl\" format=\"xml\" multifile-model=\"true\">\r\n    <data-source source=\"LOCAL\" name=\"coffee@localhost\" uuid=\"2bb03cc9-e6fe-4700-8922-266919810147\">\r\n      <driver-ref>mysql.8</driver-ref>\r\n      <synchronize>true</synchronize>\r\n      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>\r\n      <jdbc-url>jdbc:mysql://localhost:3306/coffee</jdbc-url>\r\n      <jdbc-additional-properties>\r\n        <property name=\"com.intellij.clouds.kubernetes.db.host.port\" />\r\n        <property name=\"com.intellij.clouds.kubernetes.db.enabled\" value=\"false\" />\r\n        <property name=\"com.intellij.clouds.kubernetes.db.container.port\" />\r\n      </jdbc-additional-properties>\r\n      <working-dir>$ProjectFileDir$</working-dir>\r\n    </data-source>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+--- a/.idea/dataSources.xml	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/.idea/dataSources.xml	(date 1745477447403)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+-    <data-source source="LOCAL" name="coffee@localhost" uuid="2bb03cc9-e6fe-4700-8922-266919810147">
++    <data-source source="LOCAL" name="coffee@localhost" uuid="6c90fe5d-ccaa-4b3e-abfc-c601fad52212">
+       <driver-ref>mysql.8</driver-ref>
+       <synchronize>true</synchronize>
+       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+Index: target/mvc-1.0-SNAPSHOT/META-INF/MANIFEST.MF
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Manifest-Version: 1.0\r\nCreated-By: IntelliJ IDEA\r\nBuilt-By: kcw\r\nBuild-Jdk: Oracle OpenJDK 21\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/mvc-1.0-SNAPSHOT/META-INF/MANIFEST.MF b/target/mvc-1.0-SNAPSHOT/META-INF/MANIFEST.MF
+--- a/target/mvc-1.0-SNAPSHOT/META-INF/MANIFEST.MF	(revision f9cbd0db1230ecbe2f90cdf074aa14a0022e0aa8)
++++ b/target/mvc-1.0-SNAPSHOT/META-INF/MANIFEST.MF	(date 1745514935827)
+@@ -1,5 +1,5 @@
+ Manifest-Version: 1.0
+ Created-By: IntelliJ IDEA
+-Built-By: kcw
++Built-By: USER
+ Build-Jdk: Oracle OpenJDK 21
+ 

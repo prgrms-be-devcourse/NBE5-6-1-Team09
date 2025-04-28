@@ -1,0 +1,282 @@
+Index: src/main/java/com/grepp/spring/IndexController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.grepp.spring;\r\n\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\n\r\n@Controller\r\n@RequestMapping(\"/\")\r\npublic class IndexController {\r\n\r\n//    @CrossOrigin(origins = \"http://localhost:63342\", allowCredentials = \"true\")\r\n    @GetMapping\r\n    public String index() {\r\n        return \"index\";\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/IndexController.java b/src/main/java/com/grepp/spring/IndexController.java
+--- a/src/main/java/com/grepp/spring/IndexController.java	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/java/com/grepp/spring/IndexController.java	(date 1745472299912)
+@@ -1,16 +1,34 @@
+ package com.grepp.spring;
+ 
++import com.grepp.spring.app.model.product.ProductService;
++import com.grepp.spring.app.model.product.dto.ProductDto;
++import lombok.RequiredArgsConstructor;
+ import org.springframework.stereotype.Controller;
++import org.springframework.ui.Model;
+ import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PostMapping;
+ import org.springframework.web.bind.annotation.RequestMapping;
+ 
++import java.util.List;
++
+ @Controller
+ @RequestMapping("/")
++@RequiredArgsConstructor
+ public class IndexController {
+ 
+-//    @CrossOrigin(origins = "http://localhost:63342", allowCredentials = "true")
++    private final ProductService productService;
++
+     @GetMapping
+-    public String index() {
++    public String index(Model model) {
++        List<ProductDto> product = productService.selectAll();
++        model.addAttribute("products", product);
+         return "index";
+     }
++
++    @PostMapping
++    public String index(Model model){
++
++
++        return "product/list";
++    }
+ }
+Index: src/main/java/com/grepp/spring/app/model/product/ProductRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.grepp.spring.app.model.product;\r\n\r\nimport com.grepp.spring.app.model.product.dto.OrderListDto;\r\nimport com.grepp.spring.app.model.product.dto.OrderProductDto;\r\nimport com.grepp.spring.app.model.product.dto.ProductDto;\r\nimport com.grepp.spring.app.model.product.dto.ProductImg;\r\nimport java.util.List;\r\nimport org.apache.ibatis.annotations.Mapper;\r\nimport org.springframework.stereotype.Repository;\r\n\r\n@Mapper\r\n@Repository\r\npublic interface ProductRepository {\r\n\r\n\r\n    void insert(ProductDto product);\r\n\r\n    void insertImage(ProductImg productImg);\r\n\r\n    boolean deleteById(Integer id);\r\n    List<ProductDto> selectAll();\r\n\r\n    void insertPurchase(OrderListDto nonMember);\r\n\r\n    void insertOrderProduct(OrderProductDto product);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/app/model/product/ProductRepository.java b/src/main/java/com/grepp/spring/app/model/product/ProductRepository.java
+--- a/src/main/java/com/grepp/spring/app/model/product/ProductRepository.java	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/java/com/grepp/spring/app/model/product/ProductRepository.java	(date 1745462541628)
+@@ -6,6 +6,7 @@
+ import com.grepp.spring.app.model.product.dto.ProductImg;
+ import java.util.List;
+ import org.apache.ibatis.annotations.Mapper;
++import org.apache.ibatis.annotations.Param;
+ import org.springframework.stereotype.Repository;
+ 
+ @Mapper
+@@ -23,4 +24,6 @@
+     void insertPurchase(OrderListDto nonMember);
+ 
+     void insertOrderProduct(OrderProductDto product);
++
++    List<ProductDto> selectPaged(@Param("start") int start, @Param("offset") int offset);
+ }
+Index: src/main/webapp/WEB-INF/view/index.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><%--\r\n  Created by IntelliJ IDEA.\r\n  User: namdabin\r\n  Date: 2025-04-22\r\n  Time: 오후 7:03\r\n  To change this template use File | Settings | File Templates.\r\n--%>\r\n<%@ page contentType=\"text/html;charset=UTF-8\" language=\"java\" %>\r\n<html>\r\n<head>\r\n    <title>Title</title>\r\n</head>\r\n<body>\r\n<h1>Hello This is index jsp</h1>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/view/index.jsp b/src/main/webapp/WEB-INF/view/index.jsp
+--- a/src/main/webapp/WEB-INF/view/index.jsp	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/webapp/WEB-INF/view/index.jsp	(date 1745472138357)
+@@ -1,16 +1,104 @@
+-<%--
+-  Created by IntelliJ IDEA.
+-  User: namdabin
+-  Date: 2025-04-22
+-  Time: 오후 7:03
+-  To change this template use File | Settings | File Templates.
+---%>
+-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
++<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
++<%@include file="/WEB-INF/view/include/page.jsp" %>
+ <html>
+ <head>
+-    <title>Title</title>
++    <title>Grids & Circle</title>
++    <%@include file="/WEB-INF/view/include/static.jsp" %>
++    <style>
++        body {
++            background: #ddd;
++        }
++
++        .center-wrapper {
++            display: flex;
++            flex-wrap: wrap;
++            justify-content: center;
++            margin: 0;
++            padding: 0;
++        }
++
++        .rounded-card {
++            border-radius: 12px;
++        }
++
++        .rounded-card .card-image img {
++            border-top-left-radius: 12px;
++            border-top-right-radius: 12px;
++        }
++
++        .custom-price p {
++            font-size: 1.3rem;
++            font-weight: bold;
++            margin: 0;
++        }
++
++        .cart-sidebar {
++            position: fixed;
++            top: 50%;
++            left: 80px;
++            transform: translateY(-50%);
++            width: 240px;
++            background-color: white;
++            padding: 16px;
++            box-shadow: 0 0 8px rgba(0,0,0,0.2);
++            border-radius: 8px;
++            z-index: 999;
++        }
++    </style>
+ </head>
+ <body>
+-<h1>Hello This is index jsp</h1>
++<%@include file="/WEB-INF/view/include/header.jsp" %>
++<%@include file="/WEB-INF/view/include/sidenav.jsp" %>
++<main class="container" style="padding: 0;">
++    <div class="product-list row center-wrapper" style="margin: 0;">
++        <c:forEach items="${products}" var="product">
++            <div class="col s12 m6 no-padding" style="max-width: 400px;">
++                <div class="card hoverable rounded-card z-depth-2" style="margin: 5px">
++                    <div class="card-image">
++                        <img src="${product.image.url}" style="height: 400px;">
++                        <a class="btn-floating halfway-fab waves-effect black add-cart"><i class="material-icons">add_shopping_cart</i></a>
++                    </div>
++                    <div class="card-content">
++                        <span class="card-title blue-grey-darken-3-text"><c:out value="${product.name}"/></span>
++                        <p class="info blue-grey-text"><c:out value="${product.info}"/></p>
++                        <div class="price center-align custom-price"><p><c:out value="${product.price}"/>원</p></div>
++                    </div>
++                </div>
++            </div>
++        </c:forEach>
++
++    </div>
++    <div class="cart-sidebar" id="cartSidebar">
++        <h6>🛒 장바구니 (<span id="cartCount">0</span>)</h6>
++        <ul id="cartItems" class="collection"></ul>
++        <form id="cartForm" action="/product/list" method="post">
++            <div id="cartFormInputs"></div>
++            <button type="submit" class="btn btn-small green" style="margin-top: 10px;">구매하기</button>
++        </form>
++    </div>
++</main>
++
++<%--<div id="productCardTemplate" style="display:none;">--%>
++<%--    <div class="col s12 m6 no-padding" style="max-width: 400px;">--%>
++<%--        <div class="card hoverable rounded-card z-depth-2" style="margin: 5px;">--%>
++<%--            <div class="card-image">--%>
++<%--                <img class="thumbnail" src="" style="height: 400px;">--%>
++<%--                <a class="btn-floating halfway-fab waves-effect black">--%>
++<%--                    <i class="material-icons">add_shopping_cart</i>--%>
++<%--                </a>--%>
++<%--            </div>--%>
++<%--            <div class="card-content">--%>
++<%--                <span class="card-title blue-grey-darken-3-text name"></span>--%>
++<%--                <p class="info blue-grey-text"></p>--%>
++<%--                <div class="price center-align custom-price">--%>
++<%--                    <p></p>--%>
++<%--                </div>--%>
++<%--            </div>--%>
++<%--        </div>--%>
++<%--    </div>--%>
++<%--</div>--%>
++<span class="target" style="display:none;"></span>
++<%@include file="/WEB-INF/view/include/footer.jsp" %>
++<script src="${context}/assets/js/sidebar.js" defer></script>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+Index: src/main/resources/mybatis/mappers/product/productMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n<!DOCTYPE mapper\r\n  PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\"\r\n  \"https://mybatis.org/dtd/mybatis-3-mapper.dtd\">\r\n<mapper namespace=\"com.grepp.spring.app.model.product.ProductRepository\">\r\n\r\n  <resultMap id=\"productMap\" type=\"com.grepp.spring.app.model.product.dto.ProductDto\">\r\n    <id property=\"id\" column=\"id\"/>\r\n    <association property=\"image\" column=\"id\" javaType=\"ProductImg\" select=\"selectImg\" columnPrefix=\"product_\"/>\r\n  </resultMap>\r\n\r\n  <select id=\"selectAll\" parameterType=\"com.grepp.spring.app.model.product.dto.ProductDto\" resultMap=\"productMap\">\r\n    <!-- join 해서 product image도 같이 가져오기-->\r\n    select * from product;\r\n  </select>\r\n\r\n  <insert id=\"insert\" parameterType=\"com.grepp.spring.app.model.product.dto.ProductDto\" useGeneratedKeys=\"true\" keyProperty=\"id\">\r\n    insert into product(name, price, amount, info) values (#{name}, #{price}, #{amount}, #{info})\r\n  </insert>\r\n\r\n  <insert id=\"insertImage\" parameterType=\"com.grepp.spring.app.model.product.dto.ProductImg\">\r\n    insert into product_image(product_id, ORIGIN_FILE_NAME, RENAME_FILE_NAME, SAVE_PATH)\r\n    values (#{productId}, #{originFileName}, #{renameFileName}, #{savePath})\r\n  </insert>\r\n\r\n  <insert id=\"insertPurchase\" parameterType=\"com.grepp.spring.app.model.product.dto.OrderListDto\" useGeneratedKeys=\"true\" keyProperty=\"id\">\r\n    INSERT INTO coffee.order_list\r\n    (email, address, address_number, amount, price, createdAt, is_member)\r\n    VALUES(#{email}, #{address}, #{addressNumber}, #{item.amount}, #{item.price}, CURRENT_TIMESTAMP, #{isMember});\r\n  </insert>\r\n\r\n  <insert id=\"insertOrderProduct\"\r\n    parameterType=\"com.grepp.spring.app.model.product.dto.OrderProductDto\">\r\n    INSERT INTO `coffee`.order_product\r\n    (order_id, product_id, amount)\r\n    VALUES (#{orderId}, #{productId}, #{amount});\r\n  </insert>\r\n\r\n  <select id=\"selectImg\" parameterType=\"int\" resultType=\"com.grepp.spring.app.model.product.dto.ProductImg\">\r\n    SELECT * FROM product_image WHERE product_id = #{product_id}\r\n  </select>\r\n\r\n  <delete id=\"deleteById\" parameterType=\"int\" >\r\n    delete from product where id = #{id}\r\n  </delete>\r\n\r\n</mapper>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/mybatis/mappers/product/productMapper.xml b/src/main/resources/mybatis/mappers/product/productMapper.xml
+--- a/src/main/resources/mybatis/mappers/product/productMapper.xml	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/resources/mybatis/mappers/product/productMapper.xml	(date 1745462726273)
+@@ -14,6 +14,10 @@
+     select * from product;
+   </select>
+ 
++  <select id="selectPaged" resultMap="productMap">
++    select * from product order by id desc limit #{start}, #{offset}
++  </select>
++
+   <insert id="insert" parameterType="com.grepp.spring.app.model.product.dto.ProductDto" useGeneratedKeys="true" keyProperty="id">
+     insert into product(name, price, amount, info) values (#{name}, #{price}, #{amount}, #{info})
+   </insert>
+Index: src/main/resources/logback.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n\r\n<!-- NOTE logback 01: 설정파일 -->\r\n<configuration>\r\n  <appender class=\"ch.qos.logback.core.ConsoleAppender\" name=\"CONSOLE\">\r\n    <encoder>\r\n      <pattern>${LOG_PATTERN}</pattern>\r\n    </encoder>\r\n  </appender>\r\n\r\n  <logger additivity=\"false\" level=\"DEBUG\" name=\"com.grepp.spring\">\r\n    <appender-ref ref=\"CONSOLE\"/>\r\n  </logger>\r\n\r\n  <!-- NOTE logback 02: 로깅 레벨\r\n    TRACE > DEBUG > INFO > WARN > ERROR > OFF\r\n    설정한 로깅레벨 이상의 심각도를 지닌 로그 메시지만 출력\r\n  -->\r\n  <property name=\"LOG_PATTERN\"\r\n    value=\"%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n\"/>\r\n\r\n  <root level=\"DEBUG\">\r\n    <appender-ref ref=\"CONSOLE\"/>\r\n  </root>\r\n\r\n</configuration>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/logback.xml b/src/main/resources/logback.xml
+--- a/src/main/resources/logback.xml	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/resources/logback.xml	(date 1745465358275)
+@@ -19,7 +19,7 @@
+   <property name="LOG_PATTERN"
+     value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+ 
+-  <root level="DEBUG">
++  <root level="Info">
+     <appender-ref ref="CONSOLE"/>
+   </root>
+ 
+Index: .idea/material_theme_project_new.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/material_theme_project_new.xml b/.idea/material_theme_project_new.xml
+new file mode 100644
+--- /dev/null	(date 1745422198238)
++++ b/.idea/material_theme_project_new.xml	(date 1745422198238)
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="MaterialThemeProjectNewConfig">
++    <option name="metadata">
++      <MTProjectMetadataState>
++        <option name="migrated" value="true" />
++        <option name="pristineConfig" value="false" />
++        <option name="userId" value="42d47d75:195f90d133f:-7ffe" />
++      </MTProjectMetadataState>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/java/com/grepp/spring/app/model/product/ProductService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.grepp.spring.app.model.product;\r\n\r\nimport com.grepp.spring.app.model.product.dto.OrderListDto;\r\nimport com.grepp.spring.app.model.product.dto.OrderListDto.ProductItemDTO;\r\nimport com.grepp.spring.app.model.product.dto.OrderProductDto;\r\nimport com.grepp.spring.app.model.product.dto.ProductDto;\r\nimport com.grepp.spring.app.model.product.dto.ProductImg;\r\nimport com.grepp.spring.infra.error.exceptions.CommonException;\r\nimport com.grepp.spring.infra.response.ResponseCode;\r\nimport com.grepp.spring.infra.util.file.FileDto;\r\nimport com.grepp.spring.infra.util.file.FileUtil;\r\nimport java.io.IOException;\r\nimport java.util.List;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\nimport org.springframework.web.multipart.MultipartFile;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\n@Slf4j\r\npublic class ProductService {\r\n\r\n    private final ProductRepository productRepository;\r\n    private final FileUtil fileUtil;\r\n\r\n    @Transactional\r\n    public List<ProductDto> selectAll() {\r\n        return productRepository.selectAll();\r\n    }\r\n\r\n    @Transactional\r\n    public void registProduct(List<MultipartFile> thumbnail, ProductDto dto) {\r\n        try {\r\n            List<FileDto> fileDtos = fileUtil.upload(thumbnail, \"product\");\r\n            productRepository.insert(dto);\r\n\r\n            if (fileDtos.isEmpty()) {\r\n                return;\r\n            }\r\n\r\n            ProductImg productImg = new ProductImg(dto.getId(), fileDtos.getFirst());\r\n\r\n            productRepository.insertImage(productImg);\r\n        } catch (IOException e) {\r\n            throw new CommonException(ResponseCode.INTERNAL_SERVER_ERROR, e);\r\n        }\r\n    }\r\n\r\n    @Transactional\r\n    public boolean deleteById(Integer id) {\r\n\r\n        return productRepository.deleteById(id);\r\n    }\r\n\r\n    // 비회원 구매\r\n    @Transactional\r\n    public void purchaseProduct(OrderListDto dto) {\r\n        for (ProductItemDTO item : dto.getItems()) {\r\n            OrderListDto nonMember = new OrderListDto();\r\n            OrderProductDto product = new OrderProductDto();\r\n\r\n            nonMember.setAddress(dto.getAddress());\r\n            nonMember.setEmail(dto.getEmail());\r\n            nonMember.setCreatedAt(dto.getCreatedAt());\r\n            nonMember.setAddressNumber(dto.getAddressNumber());\r\n            nonMember.setItems(List.of(item));\r\n            nonMember.setIsMember(false);\r\n\r\n            productRepository.insertPurchase(nonMember);\r\n\r\n\r\n            product.setOrderId(nonMember.getId()); // Set the valid order ID\r\n            product.setProductId(item.getId());\r\n            product.setAmount(item.getAmount());\r\n\r\n            productRepository.insertOrderProduct(product);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/grepp/spring/app/model/product/ProductService.java b/src/main/java/com/grepp/spring/app/model/product/ProductService.java
+--- a/src/main/java/com/grepp/spring/app/model/product/ProductService.java	(revision e5cf46e5e04d1a2d71e5f7f491821c393213f722)
++++ b/src/main/java/com/grepp/spring/app/model/product/ProductService.java	(date 1745462541634)
+@@ -78,4 +78,9 @@
+             productRepository.insertOrderProduct(product);
+         }
+     }
++
++    public List<ProductDto> findPaged(int page, int size) {
++        int start = (page-1)*size;
++        return productRepository.selectPaged(start, size);
++    }
+ }
